@@ -2,10 +2,10 @@
 ## Prototipagem Funcional e Integração
 
 ### Equipe
-- Lucas Nogueira dos Santos — RM 572592
-- Enzo Coppa Selingarde — RM 573393
-- Gabriel Carlos Barbosa — RM 574074
-- Gustavo de Souza Abreu — RM 574080
+- Gustavo Pola Simões - RM 570114
+- Pedro Henrique Lemgruber - RM 572094
+- Gabriel Carlos Barbosa - RM 574074
+- Enzo Coppa Selingarde - RM 573393
 
 > Confirme os integrantes e RMs antes da entrega final.
 

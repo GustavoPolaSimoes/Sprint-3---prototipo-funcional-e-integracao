@@ -241,11 +241,6 @@
 
     const API_URL = "/api/status";
 
-
-    // ============================================================
-    // FORMATAÇÃO
-    // ============================================================
-
     function numeroBR(valor, casas = 2) {
 
         const numero = Number(valor ?? 0);
@@ -272,11 +267,6 @@
             }
         );
     }
-
-
-    // ============================================================
-    // STATUS VISUAL
-    // ============================================================
 
     function obterStatusVisual(carregador) {
 
@@ -327,11 +317,6 @@
 
         return "OFFLINE";
     }
-
-
-    // ============================================================
-    // CRIA O HTML DE UM CARREGADOR
-    // ============================================================
 
     function criarCardCarregador(carregador) {
 
@@ -547,11 +532,6 @@
         `;
     }
 
-
-    // ============================================================
-    // RENDERIZA TODOS OS CARREGADORES
-    // ============================================================
-
     function renderizarCarregadores(dados) {
 
         const container =
@@ -590,11 +570,6 @@
                 .join("");
     }
 
-
-    // ============================================================
-    // KPIs DA LOJA
-    // ============================================================
-
     function atualizarKPIs(dados) {
 
         document.getElementById(
@@ -620,11 +595,6 @@
                 dados.receitaBruta
             );
     }
-
-
-    // ============================================================
-    // BUSCA DADOS NO PYTHON
-    // ============================================================
 
     async function buscarDados() {
 
@@ -709,11 +679,9 @@
     }
 
 
-    // Primeira execução
     buscarDados();
 
 
-    // Atualiza a cada 1 segundo
     setInterval(
         buscarDados,
         1000

@@ -7,7 +7,6 @@
 - Gabriel Carlos Barbosa - RM 574074
 - Enzo Coppa Selingarde - RM 573393
 
-> Confirme os integrantes e RMs antes da entrega final.
 
 ## 1. Visão geral
 

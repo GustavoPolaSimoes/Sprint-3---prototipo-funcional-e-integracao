@@ -1,46 +1,30 @@
-// Sensores analógicos
 int ldr = A0;
 int sensor_temp = A1;
-
-// Entradas
 int login = 2;
 int energia_solar = 3;
-
-// Valores das entradas
 int switchlogin = 0;
 int switchsolar = 0;
-
-// Saídas de alerta
 int alta_demanda = 13;
 int sobrecargaE = 12;
 int sobrecargaT = 10;
-
-// Temperatura
 int temperatura = 0;
 
-
 unsigned long ultimaLeituraSerial = 0;
-
 const unsigned long intervaloSerial = 1000;
-
 
 void setup() {
 
-  // Entradas
   pinMode(login, INPUT);
   pinMode(energia_solar, INPUT);
 
-  // Saídas
   pinMode(alta_demanda, OUTPUT);
   pinMode(sobrecargaE, OUTPUT);
   pinMode(sobrecargaT, OUTPUT);
 
-  // Inicializa as saídas desligadas
   digitalWrite(alta_demanda, LOW);
   digitalWrite(sobrecargaE, LOW);
   digitalWrite(sobrecargaT, LOW);
 
-  // Comunicação serial
   Serial.begin(9600);
 }
 
@@ -62,8 +46,6 @@ void loop() {
     125
   );
 
-
-  // Alta demanda
   if (
     ldrVal > 300
     && ldrVal < 500
@@ -81,8 +63,6 @@ void loop() {
     );
   }
 
-
-  // Sobrecarga elétrica
   else if (
     ldrVal <= 300
     && switchlogin == 1
@@ -99,8 +79,6 @@ void loop() {
     );
   }
 
-
-  // Situação normal
   else {
 
     digitalWrite(

@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Tinkercad Net Connector",
+  "description": "Tinkercad Net Connector",
+  "version": "1.0",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.tinkercad.com/things/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Configure"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.tinkercad.com/*",
+    "http://localhost:8080/*",
+    "http://127.0.0.1:8080/*"
+  ]
+}

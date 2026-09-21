@@ -5,20 +5,14 @@ import os
 import time
 
 
-# ============================================================
 # CONFIGURAÇÃO DO SERVIDOR
-# ============================================================
-
 app = Flask(__name__)
 
 PASTA_PROJETO = os.path.dirname(
     os.path.abspath(__file__)
 )
 
-
-# ============================================================
 # CONFIGURAÇÕES DA RECARGA
-# ============================================================
 
 # Potência simulada de cada carregador
 POTENCIA_CARREGADOR_KW = 7.04
@@ -30,29 +24,13 @@ TARIFA_KWH = 2.00
 # Ou seja: 1 segundo real = 1 minuto de recarga
 FATOR_TEMPO = 60
 
-
-# ============================================================
-# CARREGADORES
-# ============================================================
-
 # Cada device recebido do Tinkercad terá seu próprio registro.
-#
-# Exemplo:
-#
-# carregadores = {
-#     "1242959949": {...},
-#     "1242960002": {...}
-# }
 
 carregadores = {}
 
-
-# ============================================================
 # CRIA UM NOVO CARREGADOR
-# ============================================================
 
 def criar_carregador(device):
-
     numero_vaga = len(carregadores) + 1
 
     carregador = {
@@ -66,10 +44,7 @@ def criar_carregador(device):
             f"Vaga {numero_vaga:02d} - GoodWe HCA G2"
         ),
 
-
-        # --------------------------------------------
         # DADOS DO ARDUINO
-        # --------------------------------------------
 
         "login": 0,
 
@@ -89,10 +64,7 @@ def criar_carregador(device):
 
         "ultimaAtualizacao": None,
 
-
-        # --------------------------------------------
         # DADOS DA RECARGA
-        # --------------------------------------------
 
         "sessoesAtivas": 0,
 
@@ -113,10 +85,6 @@ def criar_carregador(device):
         "receitaBruta": 0.0,
 
 
-        # --------------------------------------------
-        # CONTROLE INTERNO
-        # --------------------------------------------
-
         "_ultimoInstanteSimulacao": (
             time.monotonic()
         )
@@ -136,15 +104,8 @@ def criar_carregador(device):
 
     return carregador
 
-
-# ============================================================
 # OBTÉM UM CARREGADOR PELO DEVICE
-# ============================================================
-
 def obter_carregador(device):
-
-    # Se ainda não conhecemos esse device,
-    # criamos uma nova vaga automaticamente.
 
     if device not in carregadores:
 
@@ -152,11 +113,7 @@ def obter_carregador(device):
 
     return carregadores[device]
 
-
-# ============================================================
 # CALCULA O STATUS DE UM CARREGADOR
-# ============================================================
-
 def calcular_status(carregador):
 
     # Sobrecarga elétrica ou térmica
@@ -185,14 +142,9 @@ def calcular_status(carregador):
 
     return "livre"
 
-
-# ============================================================
 # ATUALIZA O ESTADO DE RECARGA
-# ============================================================
-
 def atualizar_estado_recarga(carregador):
 
-    # Login ligado representa uma sessão ativa
     if carregador["login"] == 1:
 
         carregador["sessoesAtivas"] = 1
@@ -220,11 +172,7 @@ def atualizar_estado_recarga(carregador):
 
         carregador["potenciaAtual"] = 0.0
 
-
-# ============================================================
 # SIMULA ENERGIA E RECEITA DE UM CARREGADOR
-# ============================================================
-
 def atualizar_simulacao(carregador):
 
     agora = time.monotonic()
@@ -246,18 +194,11 @@ def atualizar_simulacao(carregador):
 
     atualizar_estado_recarga(carregador)
 
-
-    # Se não estiver carregando,
-    # energia e receita não aumentam.
-
     if carregador["carregando"] == 0:
 
         return
 
-
-    # ========================================================
     # CONVERTE O TEMPO REAL EM TEMPO SIMULADO
-    # ========================================================
 
     segundos_simulados = (
         segundos_reais
@@ -271,13 +212,6 @@ def atualizar_simulacao(carregador):
     minutos_simulados = (
         segundos_simulados / 60
     )
-
-
-    # ========================================================
-    # ENERGIA
-    #
-    # kWh = kW × horas
-    # ========================================================
 
     energia_adicionada = (
         POTENCIA_CARREGADOR_KW
@@ -299,13 +233,6 @@ def atualizar_simulacao(carregador):
         "tempoSessaoMinutos"
     ] += minutos_simulados
 
-
-    # ========================================================
-    # RECEITA
-    #
-    # Receita = Energia × Tarifa
-    # ========================================================
-
     receita_adicionada = (
         energia_adicionada
         * TARIFA_KWH
@@ -321,11 +248,7 @@ def atualizar_simulacao(carregador):
         "receitaBruta"
     ] += receita_adicionada
 
-
-# ============================================================
 # ATUALIZA TODOS OS CARREGADORES
-# ============================================================
-
 def atualizar_todos_carregadores():
 
     for carregador in carregadores.values():
@@ -335,10 +258,7 @@ def atualizar_todos_carregadores():
         )
 
 
-# ============================================================
 # PREPARA UM CARREGADOR PARA A API
-# ============================================================
-
 def carregador_para_resposta(carregador):
 
     # Remove campos internos
@@ -387,11 +307,7 @@ def carregador_para_resposta(carregador):
 
     return resposta
 
-
-# ============================================================
 # CALCULA OS INDICADORES DA LOJA
-# ============================================================
-
 def calcular_resumo():
 
     sessoes_ativas = 0
@@ -450,11 +366,7 @@ def calcular_resumo():
         "tarifaKWh": TARIFA_KWH
     }
 
-
-# ============================================================
 # MONTA A RESPOSTA COMPLETA DA API
-# ============================================================
-
 def montar_resposta_api():
 
     atualizar_todos_carregadores()
@@ -483,11 +395,7 @@ def montar_resposta_api():
 
     resumo = calcular_resumo()
 
-
-    # ========================================================
     # RESPOSTA PRINCIPAL
-    # ========================================================
-
     resposta = {
 
         "quantidadeCarregadores":
@@ -511,15 +419,6 @@ def montar_resposta_api():
         "carregadores":
             lista_resposta
     }
-
-
-    # ========================================================
-    # COMPATIBILIDADE TEMPORÁRIA COM O HTML ATUAL
-    #
-    # Enquanto não alteramos o HTML para mostrar vários
-    # cards, enviamos os dados da Vaga 01 também no nível
-    # principal da API.
-    # ========================================================
 
     if len(lista_resposta) > 0:
 
@@ -570,7 +469,6 @@ def montar_resposta_api():
             )
 
 
-    # Caso nenhum Tinkercad ainda tenha se conectado
     else:
 
         resposta.update({
@@ -613,11 +511,7 @@ def montar_resposta_api():
 
     return resposta
 
-
-# ============================================================
 # CORS
-# ============================================================
-
 @app.after_request
 def permitir_acesso(response):
 
@@ -627,11 +521,7 @@ def permitir_acesso(response):
 
     return response
 
-
-# ============================================================
 # RECEBE OS DADOS DO TINKERCAD
-# ============================================================
-
 @app.route(
     "/arduinoserver",
     methods=["GET"]
@@ -643,11 +533,7 @@ def receber_arduino():
         ""
     )
 
-
-    # ========================================================
     # OUTPUT DO SERIAL
-    # ========================================================
-
     if tipo_mensagem == "output":
 
         mensagem = request.args.get(
@@ -669,36 +555,23 @@ def receber_arduino():
 
 
         try:
-
-            # Obtém o carregador correto
             carregador = obter_carregador(
                 device
             )
 
-
-            # Calcula energia acumulada
-            # antes da alteração do estado.
             atualizar_simulacao(
                 carregador
             )
 
-
-            # Guarda estado anterior
             login_anterior = (
                 carregador["login"]
             )
 
-
-            # Converte o JSON do Arduino
             dados_recebidos = json.loads(
                 mensagem
             )
-
-
-            # =================================================
+        
             # ATUALIZA APENAS ESTE CARREGADOR
-            # =================================================
-
             carregador["login"] = int(
                 dados_recebidos.get(
                     "login",
@@ -760,24 +633,12 @@ def receber_arduino():
                 )
             )
 
-
-            # =================================================
             # STATUS
-            # =================================================
-
             carregador["status"] = (
                 calcular_status(
                     carregador
                 )
             )
-
-
-            # =================================================
-            # NOVA SESSÃO
-            #
-            # Login:
-            # 0 -> 1
-            # =================================================
 
             if (
                 login_anterior == 0
@@ -816,11 +677,7 @@ def receber_arduino():
                 "%H:%M:%S"
             )
 
-
-            # =================================================
             # TERMINAL
-            # =================================================
-
             print("")
 
             print(
@@ -846,7 +703,6 @@ def receber_arduino():
                 )
             )
 
-
         except json.JSONDecodeError:
 
             print("")
@@ -860,11 +716,6 @@ def receber_arduino():
 
         return "", 200
 
-
-    # ========================================================
-    # NÃO UTILIZAMOS PYTHON -> ARDUINO
-    # ========================================================
-
     if tipo_mensagem == "allinputs":
 
         return jsonify({
@@ -877,11 +728,7 @@ def receber_arduino():
         200
     )
 
-
-# ============================================================
 # API DO DASHBOARD
-# ============================================================
-
 @app.route(
     "/api/status",
     methods=["GET"]
@@ -892,11 +739,7 @@ def status():
         montar_resposta_api()
     )
 
-
-# ============================================================
 # DASHBOARD
-# ============================================================
-
 @app.route("/")
 def pagina():
 
@@ -905,11 +748,7 @@ def pagina():
         "index.html"
     )
 
-
-# ============================================================
 # INICIA O SERVIDOR
-# ============================================================
-
 if __name__ == "__main__":
 
     print("")
